@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ブルプロ：デイリー・ウィークリーチェックリスト</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --accent: #fbbf24;
+      --accent-2: #38bdf8;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: radial-gradient(circle at 10% 20%, rgba(59,130,246,0.18), transparent 35%),
+                  radial-gradient(circle at 90% 10%, rgba(251,191,36,0.22), transparent 30%),
+                  radial-gradient(circle at 80% 70%, rgba(14,165,233,0.14), transparent 30%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 32px 24px 12px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.02em;
+    }
+
+    p.lead {
+      margin: 12px auto 0;
+      max-width: 720px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto 48px;
+      padding: 0 16px 48px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 16px 0 24px;
+    }
+
+    button {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+      box-shadow: var(--shadow);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    section.card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    section.card h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    ul.checklist {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    li.item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 12px 10px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .item label {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 10px;
+      cursor: pointer;
+      width: 100%;
+      line-height: 1.4;
+    }
+
+    .item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+    }
+
+    .item-title {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .item-note {
+      grid-column: 2;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(59,130,246,0.18);
+      color: #bfdbfe;
+      border: 1px solid rgba(59,130,246,0.35);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pill.accent {
+      background: rgba(251,191,36,0.18);
+      color: #fcd34d;
+      border-color: rgba(251,191,36,0.35);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 24px 12px 32px;
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 24px; }
+      .item { padding: 10px; }
+      button { width: 100%; justify-content: center; display: inline-flex; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>スタレゾ：デイリー・ウィークリーチェックリスト</h1>
+    <p class="lead">日課・週課・週替わりショップの進捗をまとめて管理できます。</p>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <button id="reset">すべてリセット</button>
+      <button id="completeAll">全項目を完了にする</button>
+    </div>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="daily-title">
+        <h2 id="daily-title"><span class="pill accent">Daily</span><span class="counter" id="daily-count">0 / 13</span></h2>
+        <ul class="checklist" id="daily-list"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="weekly-title">
+        <h2 id="weekly-title"><span class="pill">Weekly</span><span class="counter" id="weekly-count">0 / 10</span></h2>
+        <ul class="checklist" id="weekly-list"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="store-title">
+        <h2 id="store-title"><span class="pill">Weekly Store</span><span class="counter" id="store-count">0 / 7</span></h2>
+        <ul class="checklist" id="store-list"></ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    チェック状態はブラウザのローカルに保存されます。ブラウザを変えると引き継がれません。
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "bpsr-checklist-v1";
+
+    const items = [
+      { id: "d1", group: "daily", title: "不安定な空間", note: "最大6回まで持ち越し可" },
+      { id: "d2", group: "daily", title: "シーズンパス活動功績", note: "活動ポイント獲得で進行" },
+      { id: "d3", group: "daily", title: "開拓局", note: "最大9件まで持ち越し可" },
+      { id: "d4", group: "daily", title: "精鋭討伐チェスト", note: "鍵は最大6まで所持可" },
+      { id: "d5", group: "daily", title: "ボス討伐チェスト", note: "鍵は最大6まで所持可" },
+      { id: "d6", group: "daily", title: "フォーカス消化", note: "フォーカス上限 2,000 まで保持" },
+      { id: "d7", group: "daily", title: "ホーム依頼", note: "最大9件まで持ち越し可" },
+      { id: "d8", group: "daily", title: "ワールドレイド", note: "3日クリアで完了" },
+      { id: "d9", group: "daily", title: "ギルドチェックイン", note: "管理人に話しかけて即完了" },
+      { id: "d10", group: "daily", title: "ギルド納品", note: "ギルド活動用デイリー" },
+      { id: "d11", group: "daily", title: "ギルドハント", note: "金・土・日 10:00 ~ 24:00" },
+      { id: "d12", group: "daily", title: "神秘ストア購入", note: "必要なものだけ購入。パス購入者は1回リフレッシュ可" },
+      { id: "w13", group: "weekly", title: "生活スキル週クエ", note: "各スキルの週依頼" },
+      { id: "w14", group: "weekly", title: "ワールドレイド（1,200活動P）", note: "週次ポイント目標" },
+      { id: "w15", group: "weekly", title: "友情ポイント支援", note: "フレンド支援でポイント獲得上限1,000" },
+      { id: "d16", group: "weekly", title: "カジュアル友情ポイント", note: "日ごと初回イベントの報酬UP上限1,000" },
+      { id: "w17", group: "weekly", title: "ギルドダンス", note: "金 19:30 ~ 19:55" },
+      { id: "w18", group: "weekly", title: "ギルド活動報酬", note: "週報酬の受取" },
+      { id: "w19", group: "weekly", title: "ID改鋳石", note: "最大20週分" },
+      { id: "w20", group: "weekly", title: "厄災の主", note: "週5回上限" },
+      { id: "w21", group: "weekly", title: "開拓者報酬", note: "9個の依頼で達成" },
+      { id: "w22", group: "weekly", title: "竜レイド", note: "週1報酬上限" },
+      { id: "w23", group: "weekly", title: "レグディニス遺跡", note: "2週間に1回" },
+      { id: "s24", group: "store", title: "シーズンパスショップ", note: "エンブレム素材、ルーノ袋など" },
+      { id: "s25", group: "store", title: "オーブショップ", note: "週購入上限あり" },
+      { id: "s26", group: "store", title: "友情ショップ", note: "友情ポイント消費" },
+      { id: "s27", group: "store", title: "名誉ストア", note: "必要なものだけ購入" },
+      { id: "s28", group: "store", title: "GCショップ", note: "週10,000獲得上限" },
+      { id: "s29", group: "store", title: "ギルドショップ", note: "ギルド専用通貨" },
+      { id: "s30", group: "store", title: "装備交換所", note: "紫交換" }
+    ];
+
+    const state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw) || {};
+      } catch (err) {
+        console.warn("状態の読み込みに失敗しました", err);
+        return {};
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function renderGroup(group, containerId, countId, total) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const fragment = document.createDocumentFragment();
+      items.filter(i => i.group === group).forEach(item => {
+        const li = document.createElement("li");
+        li.className = "item";
+
+        const label = document.createElement("label");
+        label.setAttribute("for", item.id);
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.id = item.id;
+        input.checked = Boolean(state[item.id]);
+
+        input.addEventListener("change", () => {
+          state[item.id] = input.checked;
+          saveState();
+          updateCounters();
+        });
+
+        const title = document.createElement("span");
+        title.className = "item-title";
+        title.textContent = item.title;
+
+        label.appendChild(input);
+        label.appendChild(title);
+
+        if (item.note) {
+          const note = document.createElement("span");
+          note.className = "item-note";
+          note.textContent = item.note;
+          label.appendChild(note);
+        }
+
+        li.appendChild(label);
+        fragment.appendChild(li);
+      });
+
+      container.appendChild(fragment);
+      document.getElementById(countId).textContent = `${countChecked(group)} / ${total}`;
+    }
+
+    function countChecked(group) {
+      return items.filter(i => i.group === group && state[i.id]).length;
+    }
+
+    function updateCounters() {
+      document.getElementById("daily-count").textContent = `${countChecked("daily")} / 13`;
+      document.getElementById("weekly-count").textContent = `${countChecked("weekly")} / 10`;
+      document.getElementById("store-count").textContent = `${countChecked("store")} / 7`;
+    }
+
+    function resetAll(checked = false) {
+      items.forEach(i => { state[i.id] = checked; });
+      saveState();
+      render();
+    }
+
+    function render() {
+      renderGroup("daily", "daily-list", "daily-count", 13);
+      renderGroup("weekly", "weekly-list", "weekly-count", 10);
+      renderGroup("store", "store-list", "store-count", 7);
+      updateCounters();
+    }
+
+    document.getElementById("reset").addEventListener("click", () => resetAll(false));
+    document.getElementById("completeAll").addEventListener("click", () => resetAll(true));
+
+    render();
+  </script>
+</body>
+</html>
